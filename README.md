@@ -12,7 +12,7 @@ Det här är en lokal statisk hemsida för Kristina Alexandersson Malmberg.
 ## Nuvarande struktur
 
 - `index.html` - startsida med hero, introduktion, utvalda verk och kontakt.
-- `admin.html` - lokalt adminläge/prototyp för att testa innehållsändringar, CV och bildval.
+- `local-admin.html` - lokalt adminläge/prototyp för att testa innehållsändringar, CV och bildval.
 - `admin/` - skarpt CMS-läge för Netlify/Decap när sidan publiceras.
 - `content/site.json` - redigerbart innehåll som CMS:et uppdaterar.
 - `scripts/build-content.js` - bygger om `content/site.json` till `site-content.js`.
