@@ -2,3 +2,6 @@
 .herenow/
 node_modules/
 publish/
+
+# Local Netlify folder
+.netlify
