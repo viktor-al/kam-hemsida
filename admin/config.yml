@@ -1,0 +1,95 @@
+backend:
+  name: git-gateway
+  branch: main
+
+local_backend: true
+media_folder: "assets/uploads"
+public_folder: "assets/uploads"
+publish_mode: editorial_workflow
+
+site_url: "https://k-a-m.se"
+display_url: "https://k-a-m.se"
+logo_url: "assets/logo.png"
+
+collections:
+  - name: "site"
+    label: "Hemsida"
+    files:
+      - name: "site"
+        label: "Innehåll"
+        file: "content/site.json"
+        format: "json"
+        fields:
+          - label: "Startsida"
+            name: "home"
+            widget: "object"
+            fields:
+              - label: "Hero"
+                name: "hero"
+                widget: "object"
+                fields:
+                  - { label: "Liten rubrik", name: "kicker", widget: "string" }
+                  - { label: "Stor rubrik", name: "title", widget: "string" }
+                  - { label: "Text", name: "text", widget: "text" }
+                  - { label: "Knapptext", name: "buttonText", widget: "string" }
+                  - { label: "Knapplänk", name: "buttonHref", widget: "string" }
+              - label: "Intro"
+                name: "intro"
+                widget: "object"
+                fields:
+                  - { label: "Rubrik", name: "title", widget: "string" }
+                  - label: "Stycken"
+                    name: "paragraphs"
+                    widget: "list"
+                    field: { label: "Stycke", name: "paragraph", widget: "text" }
+              - label: "Kontakt"
+                name: "contact"
+                widget: "object"
+                fields:
+                  - { label: "Liten rubrik", name: "kicker", widget: "string" }
+                  - { label: "Rubrik", name: "title", widget: "string" }
+                  - { label: "E-post", name: "email", widget: "string" }
+                  - { label: "Telefon", name: "phone", widget: "string" }
+                  - { label: "Facebook", name: "facebook", widget: "string" }
+              - label: "Utvalda verk"
+                name: "featuredWorks"
+                widget: "list"
+                summary: "{{fields.title}}"
+                fields:
+                  - { label: "Titel", name: "title", widget: "string" }
+                  - { label: "Teknik/material", name: "medium", widget: "string", required: false }
+                  - { label: "Bild", name: "image", widget: "image" }
+                  - { label: "Alt-text", name: "alt", widget: "string", required: false }
+
+          - label: "Gallerier"
+            name: "galleries"
+            widget: "object"
+            fields:
+              - label: "Collage"
+                name: "collage"
+                widget: "list"
+                summary: "{{fields.title}}"
+                required: false
+                fields: &gallery_fields
+                  - { label: "Titel", name: "title", widget: "string", required: false }
+                  - { label: "Bild", name: "image", widget: "image" }
+                  - { label: "Alt-text", name: "alt", widget: "string", required: false }
+              - { label: "Olja", name: "olja", widget: "list", required: false, summary: "{{fields.title}}", fields: *gallery_fields }
+              - { label: "Litografi", name: "litografi", widget: "list", required: false, summary: "{{fields.title}}", fields: *gallery_fields }
+              - { label: "Skulptur", name: "skulptur", widget: "list", required: false, summary: "{{fields.title}}", fields: *gallery_fields }
+              - { label: "Akvarell", name: "akvarell", widget: "list", required: false, summary: "{{fields.title}}", fields: *gallery_fields }
+              - { label: "Teckning", name: "teckning", widget: "list", required: false, summary: "{{fields.title}}", fields: *gallery_fields }
+
+          - label: "CV"
+            name: "cv"
+            widget: "object"
+            fields:
+              - { label: "Liten rubrik", name: "kicker", widget: "string" }
+              - { label: "Rubrik", name: "title", widget: "string" }
+              - { label: "Bild", name: "image", widget: "image" }
+              - { label: "Alt-text", name: "imageAlt", widget: "string", required: false }
+              - label: "CV-text"
+                name: "rawText"
+                widget: "text"
+                hint: "Behåll tomma rader mellan stycken och rubriker."
+

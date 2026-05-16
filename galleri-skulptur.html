@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Skulptur | Kristina Alexandersson Malmberg</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html#hem" aria-label="Till startsidan">
+        <span class="logo-mark"><img src="assets/logo.png" alt="KAM"></span>
+        <span>Kristina Alexandersson Malmberg</span>
+      </a>
+      <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+      <nav id="site-nav" class="site-nav" aria-label="Huvudmeny">
+        <a href="instagram.html">Instagram</a>
+        <a href="galleri.html">Galleri</a>
+        <div class="site-subnav" aria-label="Gallerikategorier">
+          <a href="galleri-collage.html">Collage</a>
+          <a href="galleri-olja.html">Olja</a>
+          <a href="galleri-litografi.html">Litografi</a>
+          <a href="galleri-skulptur.html" aria-current="page">Skulptur</a>
+          <a href="galleri-akvarell.html">Akvarell</a>
+          <a href="galleri-teckning.html">Teckning</a>
+        </div>
+        <a href="cv.html">CV</a>
+        <a href="index.html#kontakt">Kontakt</a>
+        <a href="arkiv.html">Arkiv</a>
+      </nav>
+    </header>
+
+    <main id="hem" class="category-page">
+      <section class="section" aria-labelledby="category-title">
+        <div class="section-inner">
+          <div class="section-heading">
+            <p class="section-kicker">Galleri</p>
+            <h1 id="category-title">Skulptur</h1>
+          </div>
+          <div class="technique-gallery category-page-gallery" data-gallery-section="skulptur"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>KAM</span>
+      <span>Kristina Alexandersson Malmberg</span>
+    </footer>
+    <dialog class="lightbox" aria-label="Förhandsvisning av verk">
+      <button class="lightbox-close" type="button" aria-label="Stäng">×</button>
+      <img src="assets/gallery/skulptur/01.jpg" alt="">
+      <p></p>
+    </dialog>
+    <script src="script.js"></script>
+  </body>
+</html>

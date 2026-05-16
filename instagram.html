@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Instagram | Kristina Alexandersson Malmberg</title>
+    <meta
+      name="description"
+      content="Instagramflöde och ateljéuppdateringar från Kristina Alexandersson Malmberg."
+    >
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html#hem" aria-label="Till startsidan">
+        <span class="logo-mark">
+          <img src="assets/logo.png" alt="KAM">
+        </span>
+        <span>Kristina Alexandersson Malmberg</span>
+      </a>
+      <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav id="site-nav" class="site-nav" aria-label="Huvudmeny">
+        <a href="instagram.html" aria-current="page">Instagram</a>
+        <a href="galleri.html">Galleri</a>
+        <div class="site-subnav" aria-label="Gallerikategorier">
+          <a href="galleri-collage.html">Collage</a>
+          <a href="galleri-olja.html">Olja</a>
+          <a href="galleri-litografi.html">Litografi</a>
+          <a href="galleri-skulptur.html">Skulptur</a>
+          <a href="galleri-akvarell.html">Akvarell</a>
+          <a href="galleri-teckning.html">Teckning</a>
+        </div>
+        <a href="cv.html">CV</a>
+        <a href="index.html#kontakt">Kontakt</a>
+        <a href="arkiv.html">Arkiv</a>
+      </nav>
+    </header>
+
+    <main id="hem">
+      <section id="instagram" class="section instagram-section" aria-labelledby="instagram-title">
+        <div class="section-inner">
+          <div class="section-heading">
+            <p class="section-kicker">Instagram</p>
+            <h1 id="instagram-title">Senaste från ateljén</h1>
+          </div>
+          <div id="instagram-feed" class="instagram-post-grid" aria-live="polite"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>KAM</span>
+      <span>Kristina Alexandersson Malmberg</span>
+    </footer>
+
+    <script src="instagram-feed.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
