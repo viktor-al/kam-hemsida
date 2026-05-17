@@ -10,6 +10,24 @@
     >
     <link rel="preload" href="assets/terra.jpg" as="image">
     <link rel="stylesheet" href="styles.css">
+    <script>
+      (function () {
+        var cmsTokens = [
+          'invite_token',
+          'confirmation_token',
+          'recovery_token',
+          'email_change_token'
+        ];
+        var hash = window.location.hash || '';
+        var hasCmsToken = cmsTokens.some(function (token) {
+          return hash.indexOf(token + '=') !== -1;
+        });
+
+        if (hasCmsToken) {
+          window.location.replace('/admin/index.html' + hash);
+        }
+      }());
+    </script>
   </head>
   <body>
     <header class="site-header">
