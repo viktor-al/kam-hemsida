@@ -10,23 +10,17 @@
     >
     <link rel="preload" href="assets/terra.jpg" as="image">
     <link rel="stylesheet" href="styles.css">
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <script>
-      (function () {
-        var cmsTokens = [
-          'invite_token',
-          'confirmation_token',
-          'recovery_token',
-          'email_change_token'
-        ];
-        var hash = window.location.hash || '';
-        var hasCmsToken = cmsTokens.some(function (token) {
-          return hash.indexOf(token + '=') !== -1;
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on('init', function (user) {
+          if (!user) {
+            window.netlifyIdentity.on('login', function () {
+              document.location.href = '/admin/';
+            });
+          }
         });
-
-        if (hasCmsToken) {
-          window.location.replace('/admin/index.html' + hash);
-        }
-      }());
+      }
     </script>
   </head>
   <body>
