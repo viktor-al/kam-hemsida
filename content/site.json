@@ -24,51 +24,51 @@
     "featuredWorks": [
       {
         "title": "Terra",
-        "medium": "Raku/stengods",
+        "medium": "Olja",
         "image": "assets/uploads/20260514_141748.jpg",
-        "alt": "Terra, raku och stengods"
+        "alt": "Terra, Olja"
       },
       {
         "title": "Rand",
         "medium": "Raku/stengods",
         "image": "assets/rand.jpg",
-        "alt": "Rand, raku och stengods"
+        "alt": "Rand, Raku/stengods"
       },
       {
         "title": "Grön och skön",
         "medium": "Raku/stengods",
         "image": "assets/gron-och-skon.jpg",
-        "alt": "Grön och skön, raku och stengods"
+        "alt": "Grön och skön, Raku/stengods"
       },
       {
         "title": "Vilja",
         "medium": "Raku/stengods",
         "image": "assets/vilja.jpg",
-        "alt": "Vilja, raku och stengods"
+        "alt": "Vilja, Raku/stengods"
       },
       {
         "title": "Skrud",
         "medium": "Raku/stengods",
         "image": "assets/skrud.jpg",
-        "alt": "Skrud, raku och stengods"
+        "alt": "Skrud, Raku/stengods"
       },
       {
         "title": "Växa",
         "medium": "Raku/stengods",
         "image": "assets/vaxa.jpg",
-        "alt": "Växa, raku och stengods"
+        "alt": "Växa, Raku/stengods"
       },
       {
         "title": "Prickfärdig",
         "medium": "Raku/stengods",
         "image": "assets/prickfardig.jpg",
-        "alt": "Prickfärdig, raku och stengods"
+        "alt": "Prickfärdig, Raku/stengods"
       },
       {
         "title": "Umbra",
         "medium": "Raku/stengods",
         "image": "assets/umbra.jpg",
-        "alt": "Umbra, raku och stengods"
+        "alt": "Umbra, Raku/stengods"
       }
     ]
   },
