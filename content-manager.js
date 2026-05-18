@@ -1,11 +1,16 @@
 (function () {
   const draftKey = "kam-site-content-draft";
+  const canUseLocalDraft =
+    location.protocol === "file:" ||
+    ["localhost", "127.0.0.1"].includes(location.hostname);
 
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
   }
 
   function getDraft() {
+    if (!canUseLocalDraft) return null;
+
     try {
       const draft = window.localStorage.getItem(draftKey);
       return draft ? JSON.parse(draft) : null;

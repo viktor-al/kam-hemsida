@@ -25,7 +25,7 @@ window.kamSiteContent = {
       {
         "title": "Terra",
         "medium": "Raku/stengods",
-        "image": "assets/terra.jpg",
+        "image": "assets/uploads/20260514_141748.jpg",
         "alt": "Terra, raku och stengods"
       },
       {

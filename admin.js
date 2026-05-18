@@ -60,7 +60,7 @@
 
   function saveDraft(message = "Utkastet är sparat.") {
     try {
-      window.localStorage.setItem(draftKey, JSON.stringify(content));
+      window.localStorage.setItem(draftKey, JSON.stringify(stripTransient(content)));
       setStatus(message);
     } catch {
       setStatus(
@@ -165,13 +165,35 @@
     return { base64: match[2], extension };
   }
 
-  async function uploadImageFile(file, title) {
+  function stripTransient(value) {
+    const next = clone(value);
+
+    next.home?.featuredWorks?.forEach((work) => {
+      delete work.previewImage;
+    });
+
+    Object.values(next.galleries || {}).forEach((items) => {
+      items?.forEach((item) => {
+        delete item.previewImage;
+      });
+    });
+
+    if (next.cv) {
+      delete next.cv.previewImage;
+    }
+
+    return next;
+  }
+
+  async function uploadImageFile(file, title, onPreview) {
+    const dataUrl = await imageToDataUrl(file);
+    onPreview?.(dataUrl);
+
     if (!isLiveAdmin || !currentUser()) {
-      return imageToDataUrl(file);
+      return dataUrl;
     }
 
     setStatus("Laddar upp bilden...");
-    const dataUrl = await imageToDataUrl(file);
     const { base64, extension } = dataUrlParts(dataUrl);
     const stamp = new Date().toISOString().replace(/[-:.TZ]/g, "").slice(0, 14);
     const fileName = `${stamp}-${slugify(title || file.name)}.${extension}`;
@@ -206,16 +228,19 @@
     const latest = await gitGateway("content/site.json?ref=main");
     contentSha = latest.sha;
 
+    const publishableContent = stripTransient(content);
+
     await gitGateway("content/site.json", {
       method: "PUT",
       body: JSON.stringify({
         message: "Update site content from admin",
-        content: encodeUtf8(`${JSON.stringify(content, null, 2)}\n`),
+        content: encodeUtf8(`${JSON.stringify(publishableContent, null, 2)}\n`),
         sha: contentSha,
         branch: "main",
       }),
     });
 
+    content = publishableContent;
     window.localStorage.setItem(draftKey, JSON.stringify(content));
     setStatus("Publicerat. Netlify uppdaterar hemsidan om en liten stund.");
   }
@@ -282,8 +307,9 @@
     workList.replaceChildren(
       ...content.home.featuredWorks.map((work, index) => {
         const row = document.createElement("fieldset");
-        const preview = work.image
-          ? `<img src="${escapeAttribute(work.image)}" alt="">`
+        const previewSrc = work.previewImage || work.image;
+        const preview = previewSrc
+          ? `<img src="${escapeAttribute(previewSrc)}" alt="">`
           : "<span>Ingen bild vald</span>";
 
         row.className = "admin-work";
@@ -343,8 +369,10 @@
         items.forEach((item, index) => {
           const card = document.createElement("article");
           card.className = "admin-gallery-item";
+          const previewSrc = item.previewImage || item.image;
+
           card.innerHTML = `
-            <img src="${escapeAttribute(item.image)}" alt="">
+            <img src="${escapeAttribute(previewSrc)}" alt="">
             <strong>${escapeHtml(item.title || label)}</strong>
             <button class="button button-secondary remove-gallery-image" type="button" data-gallery-key="${key}" data-gallery-index="${index}">Ta bort</button>
           `;
@@ -440,12 +468,15 @@
     if (!work) return;
 
     try {
-      work.image = await uploadImageFile(input.files[0], work.title || "utvalt-verk");
+      work.image = await uploadImageFile(input.files[0], work.title || "utvalt-verk", (preview) => {
+        work.previewImage = preview;
+        renderWorks();
+      });
       work.alt = [work.title, work.medium].filter(Boolean).join(", ");
       renderWorks();
       saveDraft("Bilden är uppladdad och sparad i utkastet.");
-    } catch {
-      setStatus("Bilden kunde inte läsas. Prova en annan bildfil.");
+    } catch (error) {
+      setStatus(`Bilden kunde inte laddas upp: ${error.message}`);
     }
   });
 
@@ -459,16 +490,19 @@
     const key = galleryCategory?.value || "collage";
     const label = galleryLabels[key] || "Galleri";
     const title = galleryTitle?.value.trim() || `${label} ${content.galleries[key].length + 1}`;
+    let previewImage = "";
 
     try {
-      const image = await uploadImageFile(galleryFile.files[0], `${label}-${title}`);
-      content.galleries[key].push({ title, image, alt: title });
+      const image = await uploadImageFile(galleryFile.files[0], `${label}-${title}`, (preview) => {
+        previewImage = preview;
+      });
+      content.galleries[key].push({ title, image, previewImage, alt: title });
       galleryFile.value = "";
       if (galleryTitle) galleryTitle.value = "";
       renderGalleryUploads();
       saveDraft("Galleribilden är uppladdad och sparad i utkastet.");
-    } catch {
-      setStatus("Bilden kunde inte läsas. Prova en annan bildfil.");
+    } catch (error) {
+      setStatus(`Bilden kunde inte laddas upp: ${error.message}`);
     }
   });
 
@@ -478,12 +512,14 @@
     readForm();
 
     try {
-      content.cv.image = await uploadImageFile(cvImageFile.files[0], "cv-bild");
+      content.cv.image = await uploadImageFile(cvImageFile.files[0], "cv-bild", (preview) => {
+        content.cv.previewImage = preview;
+      });
       content.cv.imageAlt = content.cv.imageAlt || "Kristina Alexandersson Malmberg";
       cvImageFile.value = "";
       saveDraft("CV-bilden är uppladdad och sparad i utkastet.");
-    } catch {
-      setStatus("Bilden kunde inte läsas. Prova en annan bildfil.");
+    } catch (error) {
+      setStatus(`Bilden kunde inte laddas upp: ${error.message}`);
     }
   });
 
