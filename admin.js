@@ -307,7 +307,7 @@
     workList.replaceChildren(
       ...content.home.featuredWorks.map((work, index) => {
         const row = document.createElement("fieldset");
-        const previewSrc = work.previewImage || work.image;
+        const previewSrc = getAdminImageSrc(work.previewImage || work.image);
         const preview = previewSrc
           ? `<img src="${escapeAttribute(previewSrc)}" alt="">`
           : "<span>Ingen bild vald</span>";
@@ -369,7 +369,7 @@
         items.forEach((item, index) => {
           const card = document.createElement("article");
           card.className = "admin-gallery-item";
-          const previewSrc = item.previewImage || item.image;
+          const previewSrc = getAdminImageSrc(item.previewImage || item.image);
 
           card.innerHTML = `
             <img src="${escapeAttribute(previewSrc)}" alt="">
@@ -385,6 +385,19 @@
     });
 
     galleryList.replaceChildren(...sections);
+  }
+
+  function getAdminImageSrc(value = "") {
+    const src = String(value || "").trim();
+    if (!src) return "";
+    if (/^(data:|blob:|https?:|\/)/i.test(src)) return src;
+    if (location.protocol === "file:" && location.pathname.includes("/admin/")) {
+      return `../${src}`;
+    }
+    if (location.pathname.startsWith("/admin")) {
+      return `/${src}`;
+    }
+    return src;
   }
 
   function escapeAttribute(value = "") {
