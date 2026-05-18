@@ -4,12 +4,12 @@ backend:
 
 local_backend: true
 media_folder: "assets/uploads"
-public_folder: "assets/uploads"
+public_folder: "/assets/uploads"
 publish_mode: editorial_workflow
 
 site_url: "https://k-a-m.se"
 display_url: "https://k-a-m.se"
-logo_url: "assets/logo.png"
+logo_url: "/assets/logo.png"
 
 collections:
   - name: "site"
@@ -92,4 +92,3 @@ collections:
                 name: "rawText"
                 widget: "text"
                 hint: "Behåll tomma rader mellan stycken och rubriker."
-

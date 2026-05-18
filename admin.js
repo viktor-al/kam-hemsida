@@ -9,6 +9,10 @@
   const galleryTitle = document.querySelector("[data-gallery-title]");
   const galleryFile = document.querySelector("[data-gallery-file]");
   const cvImageFile = document.querySelector("[data-cv-image-file]");
+  const loginButton = document.querySelector("[data-login-button]");
+  const logoutButton = document.querySelector("[data-logout-button]");
+  const isLiveAdmin = Boolean(window.netlifyIdentity) && location.pathname.startsWith("/admin");
+  let contentSha = "";
   const galleryLabels = {
     collage: "Collage",
     olja: "Olja",
@@ -68,6 +72,152 @@
   function setStatus(message) {
     if (!status) return;
     status.textContent = message;
+  }
+
+  function currentUser() {
+    return window.netlifyIdentity?.currentUser?.() || null;
+  }
+
+  function updateAuthState() {
+    if (!isLiveAdmin) {
+      if (form) form.hidden = false;
+      loginButton?.setAttribute("hidden", "");
+      logoutButton?.setAttribute("hidden", "");
+      return;
+    }
+
+    const user = currentUser();
+    if (form) form.hidden = !user;
+    if (loginButton) loginButton.hidden = Boolean(user);
+    if (logoutButton) logoutButton.hidden = !user;
+
+    if (user) {
+      setStatus(`Inloggad som ${user.email || "admin"}.`);
+    } else {
+      setStatus("Logga in för att redigera och publicera hemsidan.");
+    }
+  }
+
+  async function getJwt() {
+    const user = currentUser();
+    if (!user) throw new Error("Du behöver logga in först.");
+    return user.jwt();
+  }
+
+  async function gitGateway(path, options = {}) {
+    const token = await getJwt();
+    const response = await fetch(`/.netlify/git/github/contents/${path}`, {
+      ...options,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        ...(options.headers || {}),
+      },
+    });
+
+    if (!response.ok) {
+      const message = await response.text();
+      throw new Error(message || "Git Gateway svarade inte som väntat.");
+    }
+
+    return response.json();
+  }
+
+  function encodeUtf8(value) {
+    return btoa(unescape(encodeURIComponent(value)));
+  }
+
+  function decodeUtf8(value) {
+    return decodeURIComponent(escape(atob(value)));
+  }
+
+  async function loadPublishedContent() {
+    if (!isLiveAdmin || !currentUser()) return;
+
+    try {
+      setStatus("Hämtar senaste innehållet...");
+      const file = await gitGateway("content/site.json?ref=main");
+      contentSha = file.sha;
+      content = normalizeContent(JSON.parse(decodeUtf8(file.content.replace(/\n/g, ""))));
+      window.localStorage.setItem(draftKey, JSON.stringify(content));
+      fillForm();
+      setStatus(`Inloggad som ${currentUser().email || "admin"}. Senaste innehållet är hämtat.`);
+    } catch (error) {
+      setStatus(`Kunde inte hämta senaste innehållet: ${error.message}`);
+    }
+  }
+
+  function slugify(value) {
+    return String(value || "bild")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 64) || "bild";
+  }
+
+  function dataUrlParts(dataUrl) {
+    const match = String(dataUrl).match(/^data:([^;]+);base64,(.+)$/);
+    if (!match) throw new Error("Bilden kunde inte förberedas.");
+    const mime = match[1];
+    const extension = mime.includes("png") ? "png" : mime.includes("webp") ? "webp" : "jpg";
+    return { base64: match[2], extension };
+  }
+
+  async function uploadImageFile(file, title) {
+    if (!isLiveAdmin || !currentUser()) {
+      return imageToDataUrl(file);
+    }
+
+    setStatus("Laddar upp bilden...");
+    const dataUrl = await imageToDataUrl(file);
+    const { base64, extension } = dataUrlParts(dataUrl);
+    const stamp = new Date().toISOString().replace(/[-:.TZ]/g, "").slice(0, 14);
+    const fileName = `${stamp}-${slugify(title || file.name)}.${extension}`;
+    const path = `assets/uploads/${fileName}`;
+
+    await gitGateway(path, {
+      method: "PUT",
+      body: JSON.stringify({
+        message: `Upload ${fileName}`,
+        content: base64,
+        branch: "main",
+      }),
+    });
+
+    setStatus("Bilden är uppladdad. Kom ihåg att publicera innehållet också.");
+    return `/${path}`;
+  }
+
+  async function publishContent() {
+    if (!isLiveAdmin) {
+      if (exportOutput) {
+        exportOutput.value = `window.kamSiteContent = ${JSON.stringify(content, null, 2)};`;
+        exportOutput.classList.add("is-visible");
+        exportOutput.focus();
+      }
+      return;
+    }
+
+    readForm();
+    setStatus("Publicerar ändringarna...");
+
+    const latest = await gitGateway("content/site.json?ref=main");
+    contentSha = latest.sha;
+
+    await gitGateway("content/site.json", {
+      method: "PUT",
+      body: JSON.stringify({
+        message: "Update site content from admin",
+        content: encodeUtf8(`${JSON.stringify(content, null, 2)}\n`),
+        sha: contentSha,
+        branch: "main",
+      }),
+    });
+
+    window.localStorage.setItem(draftKey, JSON.stringify(content));
+    setStatus("Publicerat. Netlify uppdaterar hemsidan om en liten stund.");
   }
 
   function getPathParts(path) {
@@ -290,7 +440,7 @@
     if (!work) return;
 
     try {
-      work.image = await imageToDataUrl(input.files[0]);
+      work.image = await uploadImageFile(input.files[0], work.title || "utvalt-verk");
       work.alt = [work.title, work.medium].filter(Boolean).join(", ");
       renderWorks();
       saveDraft("Bilden är uppladdad och sparad i utkastet.");
@@ -311,7 +461,7 @@
     const title = galleryTitle?.value.trim() || `${label} ${content.galleries[key].length + 1}`;
 
     try {
-      const image = await imageToDataUrl(galleryFile.files[0]);
+      const image = await uploadImageFile(galleryFile.files[0], `${label}-${title}`);
       content.galleries[key].push({ title, image, alt: title });
       galleryFile.value = "";
       if (galleryTitle) galleryTitle.value = "";
@@ -328,7 +478,7 @@
     readForm();
 
     try {
-      content.cv.image = await imageToDataUrl(cvImageFile.files[0]);
+      content.cv.image = await uploadImageFile(cvImageFile.files[0], "cv-bild");
       content.cv.imageAlt = content.cv.imageAlt || "Kristina Alexandersson Malmberg";
       cvImageFile.value = "";
       saveDraft("CV-bilden är uppladdad och sparad i utkastet.");
@@ -358,14 +508,38 @@
     setStatus("Utkastet är nollställt.");
   });
 
-  document.querySelector(".export-content")?.addEventListener("click", () => {
-    readForm();
-    if (exportOutput) {
-      exportOutput.value = `window.kamSiteContent = ${JSON.stringify(content, null, 2)};`;
-      exportOutput.classList.add("is-visible");
-      exportOutput.focus();
+  document.querySelector(".export-content")?.addEventListener("click", async () => {
+    try {
+      await publishContent();
+    } catch (error) {
+      setStatus(`Kunde inte publicera: ${error.message}`);
     }
   });
 
+  loginButton?.addEventListener("click", () => {
+    window.netlifyIdentity?.open?.("login");
+  });
+
+  logoutButton?.addEventListener("click", () => {
+    window.netlifyIdentity?.logout?.();
+  });
+
+  if (isLiveAdmin) {
+    window.netlifyIdentity.on("init", () => {
+      updateAuthState();
+      loadPublishedContent();
+    });
+    window.netlifyIdentity.on("login", () => {
+      window.netlifyIdentity.close();
+      updateAuthState();
+      loadPublishedContent();
+    });
+    window.netlifyIdentity.on("logout", () => {
+      updateAuthState();
+    });
+    window.netlifyIdentity.init();
+  }
+
   fillForm();
+  updateAuthState();
 })();
