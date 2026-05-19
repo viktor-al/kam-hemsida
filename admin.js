@@ -1,7 +1,7 @@
 (function () {
   const draftKey = "kam-site-content-draft";
   const form = document.querySelector("[data-admin-form]");
-  const status = document.querySelector("[data-admin-status]");
+  const statuses = document.querySelectorAll("[data-admin-status]");
   const workList = document.querySelector("[data-work-list]");
   const galleryList = document.querySelector("[data-gallery-list]");
   const exportOutput = document.querySelector("[data-export-output]");
@@ -70,8 +70,29 @@
   }
 
   function setStatus(message) {
-    if (!status) return;
-    status.textContent = message;
+    statuses.forEach((status) => {
+      status.textContent = message;
+      status.classList.remove("is-updated");
+      window.requestAnimationFrame(() => {
+        status.classList.add("is-updated");
+      });
+    });
+  }
+
+  function setButtonBusy(button, busy, busyText) {
+    if (!(button instanceof HTMLButtonElement)) return;
+
+    if (busy) {
+      button.dataset.idleText = button.textContent.trim();
+      button.textContent = busyText;
+      button.disabled = true;
+      button.setAttribute("aria-busy", "true");
+    } else {
+      button.textContent = button.dataset.idleText || button.textContent;
+      delete button.dataset.idleText;
+      button.disabled = false;
+      button.removeAttribute("aria-busy");
+    }
   }
 
   function currentUser() {
@@ -557,11 +578,16 @@
     setStatus("Utkastet är nollställt.");
   });
 
-  document.querySelector(".export-content")?.addEventListener("click", async () => {
+  document.querySelector(".export-content")?.addEventListener("click", async (event) => {
+    const button = event.currentTarget;
+
     try {
+      setButtonBusy(button, true, "Publicerar...");
       await publishContent();
     } catch (error) {
       setStatus(`Kunde inte publicera: ${error.message}`);
+    } finally {
+      setButtonBusy(button, false);
     }
   });
 
