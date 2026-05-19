@@ -228,8 +228,35 @@ h3 {
   justify-content: center;
   min-height: 42px;
   padding: 10px 16px;
+  border: 1px solid transparent;
   border-radius: 6px;
+  cursor: pointer;
   font-weight: 700;
+  transition: background 160ms ease, border-color 160ms ease, box-shadow 160ms ease,
+    color 160ms ease, opacity 160ms ease, transform 80ms ease;
+  user-select: none;
+}
+
+.button:hover,
+.file-button:hover {
+  box-shadow: 0 8px 18px rgba(32, 32, 29, 0.1);
+}
+
+.button:active,
+.file-button:active {
+  transform: translateY(1px) scale(0.985);
+  box-shadow: inset 0 2px 7px rgba(32, 32, 29, 0.16);
+}
+
+.button:focus-visible,
+.file-button:focus-within {
+  outline: 3px solid rgba(143, 93, 69, 0.28);
+  outline-offset: 3px;
+}
+
+.button:disabled {
+  cursor: wait;
+  opacity: 0.64;
 }
 
 .button-primary {
@@ -1331,8 +1358,33 @@ address span {
 .admin-status {
   min-height: 1.4em;
   margin: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(143, 93, 69, 0.22);
+  border-radius: 6px;
+  background: rgba(143, 93, 69, 0.08);
   color: var(--clay);
   font-weight: 700;
+}
+
+.admin-status:empty {
+  display: none;
+}
+
+.admin-status-bottom {
+  width: 100%;
+}
+
+.admin-status.is-updated {
+  animation: admin-status-pulse 520ms ease;
+}
+
+@keyframes admin-status-pulse {
+  0% {
+    background: rgba(143, 93, 69, 0.2);
+  }
+  100% {
+    background: rgba(143, 93, 69, 0.08);
+  }
 }
 
 .admin-work {
@@ -1390,6 +1442,8 @@ address span {
   background: var(--white);
   color: var(--ink);
   cursor: pointer;
+  font-weight: 700;
+  transition: box-shadow 160ms ease, transform 80ms ease;
 }
 
 .file-button input[type="file"] {
