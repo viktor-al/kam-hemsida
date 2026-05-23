@@ -23,28 +23,28 @@
     },
     "featuredWorks": [
       {
-        "title": "Terra",
-        "medium": "Olja",
+        "title": "",
+        "medium": "",
         "image": "assets/uploads/20260514_141748.jpg",
-        "alt": "Terra, Olja"
+        "alt": ""
       },
       {
-        "title": "Rand",
+        "title": "",
         "medium": "Raku/stengods",
-        "image": "assets/rand.jpg",
-        "alt": "Rand, Raku/stengods"
+        "image": "/assets/uploads/20260523134914-rand.jpg",
+        "alt": "Raku/stengods"
       },
       {
-        "title": "Grön och skön",
+        "title": "",
         "medium": "Raku/stengods",
-        "image": "assets/gron-och-skon.jpg",
-        "alt": "Grön och skön, Raku/stengods"
+        "image": "/assets/uploads/20260523134920-gron-och-skon.jpg",
+        "alt": "Raku/stengods"
       },
       {
-        "title": "Vilja",
+        "title": "",
         "medium": "Raku/stengods",
-        "image": "assets/vilja.jpg",
-        "alt": "Vilja, Raku/stengods"
+        "image": "/assets/uploads/20260523134926-vilja.jpg",
+        "alt": "Raku/stengods"
       },
       {
         "title": "Skrud",
